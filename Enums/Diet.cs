@@ -2,8 +2,8 @@ namespace MealPlanner.Enums;
 
 public enum Diet
 {
-    Vegetarian, 
-    Vegan, 
-    Pescatarian,
-    Omnivore,
+  Vegetarian, 
+  Vegan, 
+  Pescatarian,
+  Omnivore,
 }
