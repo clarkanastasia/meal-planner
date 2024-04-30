@@ -1,6 +1,12 @@
+using System.Text.Json.Serialization;
 using MealPlanner;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers().AddJsonOptions(options => 
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 
 builder.Services.AddDbContext<MealPlannerContext>();
 
@@ -16,4 +22,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapControllers();
+
+
 app.Run();
