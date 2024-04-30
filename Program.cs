@@ -1,4 +1,8 @@
+using MealPlanner;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<MealPlannerContext>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
