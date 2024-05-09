@@ -1,16 +1,16 @@
 using MealPlanner.Enums;
+using MealPlanner.Models.Data;
+namespace MealPlanner.Models.Response;
 
-namespace MealPlanner.Models.Data;
-
-public class Recipe 
+public class RecipeResponse 
 {
-  public int Id {get; set;}
+  public required int Id {get; set;}
   public required string Name {get; set;}
   public int Servings {get; set;}
   public int CookingTime {get; set;}
-  public List<Ingredient> RecipeIngredients {get; set;} = [];
+  public required List<IngredientResponse> RecipeIngredients {get; set;}
   public required string Instructions {get; set;}
   public Diet DietType {get; set;}
   public string? Cuisine {get; set;}
-  public string? Source {get; set;}
+  public string? Source {get; set;} 
 }
