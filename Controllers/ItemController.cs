@@ -44,12 +44,17 @@ public class ItemController(MealPlannerContext context): ControllerBase
   }
 
   [HttpPost]
-  public IActionResult AddItem([FromBody] CreateItemRequest createItemREquest)
+  public IActionResult AddItem([FromBody] CreateItemRequest createItemRequest)
   {
-    _context.Items.Add(new Item 
+
+    var matchingItem = _context.Items.FirstOrDefault(item => item.Name.ToLower() == createItemRequest.Name.ToLower());
+    if(matchingItem != null){
+      return Conflict();
+    }
+    _context.Items.Add( new Item
     {
-      Name = createItemREquest.Name,
-      Category = createItemREquest.Category
+      Name = createItemRequest.Name,
+      Category = createItemRequest.Category
     });
     _context.SaveChanges();
 
