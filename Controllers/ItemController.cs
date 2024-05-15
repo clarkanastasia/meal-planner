@@ -31,7 +31,10 @@ public class ItemController(MealPlannerContext context): ControllerBase
 
     if(matchingItem == null)
     {
-      return NotFound();
+      return NotFound(new ErrorMessage
+      {
+        Error = $"Item with id of {id} was not found"
+      });
     }
 
     return Ok(new ItemResponse
@@ -49,7 +52,10 @@ public class ItemController(MealPlannerContext context): ControllerBase
 
     var matchingItem = _context.Items.FirstOrDefault(item => item.Name.ToLower() == createItemRequest.Name.ToLower());
     if(matchingItem != null){
-      return Conflict();
+      return Conflict(new ErrorMessage
+      {
+        Error = $"Item with the name {createItemRequest.Name} already exists"
+      });
     }
     _context.Items.Add( new Item
     {
@@ -67,7 +73,10 @@ public class ItemController(MealPlannerContext context): ControllerBase
     var matchingItem = _context.Items.FirstOrDefault(item => item.Id == id);
     if (matchingItem == null)
     {
-      return NotFound();
+      return NotFound(new ErrorMessage
+      {
+        Error = $"Item with id of {id} was not found"
+      });
     }
     else 
     {

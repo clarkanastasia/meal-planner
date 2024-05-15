@@ -63,7 +63,10 @@ public class RecipeController(MealPlannerContext context): ControllerBase
 
     if(matchingRecipe == null)
     {
-      return NotFound();
+      return NotFound(new ErrorMessage
+      {
+        Error = $"Recipe with id of {id} was not found"
+      });
     }
 
     var ingredientResponses = matchingRecipe.RecipeIngredients
@@ -133,7 +136,10 @@ public class RecipeController(MealPlannerContext context): ControllerBase
     var matchingRecipe = _context.Recipes.FirstOrDefault(item => item.Id == id);
     if (matchingRecipe == null)
     {
-      return NotFound();
+      return NotFound(new ErrorMessage
+      {
+        Error = $"Recipe with id of {id} was not found"
+      });
     }
     else 
     {
