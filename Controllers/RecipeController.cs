@@ -1,8 +1,12 @@
+using System.Text.RegularExpressions;
+using MealPlanner.Enums;
 using MealPlanner.Models.Data;
 using MealPlanner.Models.Request;
 using MealPlanner.Models.Response;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Newtonsoft.Json;
 
 namespace MealPlanner.Controllers;
@@ -147,5 +151,89 @@ public class RecipeController(MealPlannerContext context): ControllerBase
       _context.SaveChanges();
       return NoContent();
     }
+  }
+
+  [HttpGet("filter")]
+  public IActionResult FilterBy([FromQuery] string ingredientName = "", [FromQuery] string dietType = "", [FromQuery] int pageSize = 10, [FromQuery] int pageNum =1)
+  {
+    var filteredData = _context.Recipes
+                        .Include(recipe => recipe.RecipeIngredients)
+                          .ThenInclude(ingredient => ingredient.Item)
+                          .AsQueryable();
+
+    if(!string.IsNullOrEmpty(ingredientName))
+    {
+      filteredData = filteredData.Where(recipe => recipe.RecipeIngredients.Any(ingredient => ingredient.Item.Name == ingredientName)).AsQueryable();
+    }                    
+
+    if (!string.IsNullOrEmpty(dietType))
+    {
+      if(Enum.TryParse<Diet>(dietType, ignoreCase: true, out var intDietType))
+      {
+      filteredData = filteredData.Where(recipe => recipe.DietType == intDietType).AsQueryable();
+      } else
+      {
+        filteredData = Enumerable.Empty<Recipe>().AsQueryable();
+      }
+    }
+    if(!filteredData.Any())
+    {
+      return NotFound(new ErrorMessage
+      {
+        Error = "There were no recipes that match match your search criteria"
+      });
+    }
+    filteredData = filteredData
+                  .OrderBy(recipe => recipe.Name);
+    var totalPages = (int)Math.Ceiling((double)filteredData.Count() / pageSize);
+
+    if (pageNum > totalPages)
+    {
+      pageNum = Math.Max(1, totalPages);
+    }
+
+    var pageData = filteredData
+                  .Skip((pageNum - 1) * pageSize)
+                  .Take(pageSize)
+                  .ToList();
+
+    var recipesList = new List<RecipeResponse>();
+
+    foreach (var recipe in pageData)
+    {
+      var ingredientResponses = recipe.RecipeIngredients
+      .Select(ingredient => new IngredientResponse
+      {
+        Id = ingredient.Id,
+        ItemName = ingredient.Item.Name,
+        Quantity = ingredient.Quantity,
+        Unit = ingredient.Unit
+      }).ToList(); 
+
+      recipesList.Add(new RecipeResponse
+      {
+        Id = recipe.Id,
+        Name = recipe.Name,
+        Servings = recipe.Servings,
+        CookingTime = recipe.CookingTime,
+        RecipeIngredients = ingredientResponses,
+        Instructions = recipe.Instructions,
+        DietType = recipe.DietType,
+        Cuisine = recipe.Cuisine,
+        Source = recipe.Source
+      });
+    }
+
+    var pagedDataResponse = new PagedDataResponse
+    {
+      Data = recipesList,
+      CurrentPage = pageNum,
+      ItemsPerPage = pageSize,
+      TotalPages = totalPages
+    };
+
+    var jsonPagedData = JsonConvert.SerializeObject(pagedDataResponse);
+
+    return Ok(jsonPagedData);           
   }
 }
