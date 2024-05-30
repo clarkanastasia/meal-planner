@@ -180,7 +180,7 @@ public class RecipeController(MealPlannerContext context): ControllerBase
     {
       return NotFound(new ErrorMessage
       {
-        Error = "There were no recipes that match match your search criteria"
+        Error = "There were no recipes that match your search criteria"
       });
     }
     filteredData = filteredData
