@@ -1,9 +1,15 @@
 import './App.css'
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom'
+import RecipeList from './RecipeList'
 
 const App = () => {
 
   return (
-  <h1>Welcome to the Meal Planner App!</h1>
+    <Router>
+      <Routes>
+        <Route path = '/' element={<RecipeList />}/>
+      </Routes>
+    </Router>
   )
 }
 
