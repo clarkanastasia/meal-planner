@@ -11,25 +11,13 @@ namespace MealPlanner.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<List<string>>(
-                name: "Instructions",
-                table: "Recipes",
-                type: "text[]",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "text");
+            migrationBuilder.Sql("ALTER TABLE \"Recipes\" ALTER COLUMN \"Instructions\" TYPE text[] USING string_to_array(\"Instructions\", ',')");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
-                name: "Instructions",
-                table: "Recipes",
-                type: "text",
-                nullable: false,
-                oldClrType: typeof(List<string>),
-                oldType: "text[]");
+            migrationBuilder.Sql("ALTER TABLE \"Recipes\" ALTER COLUMN \"Instructions\" TYPE text USING array_to_string(\"Instructions\", ',')");
         }
     }
 }
