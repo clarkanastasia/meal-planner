@@ -51,7 +51,7 @@ public class RecipeController(MealPlannerContext context): ControllerBase
       });
     }
 
-    var jsonRecipesList = JsonConvert.SerializeObject(recipesList);
+    var jsonRecipesList = JsonConvert.SerializeObject(recipesList, Formatting.Indented);
 
     return Ok(jsonRecipesList);
   }
@@ -96,7 +96,7 @@ public class RecipeController(MealPlannerContext context): ControllerBase
       Source = matchingRecipe.Source
     };
 
-    var jsonRecipeResponse = JsonConvert.SerializeObject(matchingRecipeResponse);
+    var jsonRecipeResponse = JsonConvert.SerializeObject(matchingRecipeResponse, Formatting.Indented);
     return Ok(jsonRecipeResponse);
   }
 
